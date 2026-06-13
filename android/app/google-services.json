@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "126246467094",
+    "project_id": "auraview-e3e24",
+    "storage_bucket": "auraview-e3e24.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:126246467094:android:ffae1088e4d6b829f96737",
+        "android_client_info": {
+          "package_name": "com.example.aura_view"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLVl9F-TUhazynfmrwejpyoeaa6c78wPY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
