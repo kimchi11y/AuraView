@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../widgets/app_bottom_nav_bar.dart';
 import '../widgets/friend_card.dart';
 import '../widgets/friend_request_card.dart';
+import 'search_users_screen.dart';
 
 class FriendsScreen extends StatelessWidget {
   const FriendsScreen({super.key});
@@ -45,6 +46,12 @@ class FriendsScreen extends StatelessWidget {
             // Search bar
             TextFormField(
               readOnly: true,
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const SearchUsersScreen(),
+                ),
+              ),
               decoration: const InputDecoration(
                 hintText: 'Search by username...',
                 prefixIcon: Icon(Icons.search, color: AppColors.mutedText),
