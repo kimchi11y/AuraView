@@ -25,9 +25,19 @@ class FriendsScreen extends StatelessWidget {
       ),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 2,
-        onTap: (_) {},
+        onTap: (index) {
+          if (index == 2) return;
+          if (index == 3) {
+            Navigator.pop(context);
+            return;
+          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Screen not ready yet')),
+          );
+        },
       ),
       body: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
