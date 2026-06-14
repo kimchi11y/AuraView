@@ -4,9 +4,14 @@ import '../theme/app_theme.dart';
 import '../widgets/auth_card.dart';
 
 class SharedMatchesScreen extends StatelessWidget {
+  final String friendId;
   final String friendName;
 
-  const SharedMatchesScreen({super.key, required this.friendName});
+  const SharedMatchesScreen({
+    super.key,
+    required this.friendId,
+    required this.friendName,
+  });
 
   static const List<Map<String, String>> _dummyMovies = [
     {'title': 'Blade Runner 2049', 'year': '2017', 'genre': 'Sci-Fi'},

@@ -40,11 +40,11 @@ class FriendService {
   }
 
   Stream<QuerySnapshot<Map<String, dynamic>>> getIncomingRequests() {
+    // Single-field filter only — avoids composite index requirement.
+    // Status filtering is done client-side in the UI.
     return _db
         .collection('friend_requests')
         .where('toUserId', isEqualTo: _currentUid)
-        .where('status', isEqualTo: 'pending')
-        .orderBy('sentAt', descending: true)
         .snapshots();
   }
 

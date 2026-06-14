@@ -6,23 +6,19 @@ import '../theme/social_colors.dart';
 import '../widgets/auth_card.dart';
 
 class FriendCard extends StatelessWidget {
-  final String avatarUrl;
+  final String friendId;
   final String username;
+  final String avatarUrl;
   final bool isOnline;
-  final String lastSeen;
-  final int matchPercent;
   final VoidCallback? onViewMatches;
-  final VoidCallback? onHistory;
 
   const FriendCard({
     super.key,
+    required this.friendId,
     required this.username,
     this.avatarUrl = '',
     this.isOnline = false,
-    this.lastSeen = '',
-    this.matchPercent = 0,
     this.onViewMatches,
-    this.onHistory,
   });
 
   @override
@@ -76,100 +72,40 @@ class FriendCard extends StatelessWidget {
             const SizedBox(width: 12),
 
             Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    username,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.text,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  if (isOnline)
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: SocialColors.onlineBg,
-                            borderRadius: BorderRadius.circular(999),
-                          ),
-                          child: Text(
-                            'ONLINE',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w800,
-                              color: SocialColors.online,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          '$matchPercent% Match',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.mutedText,
-                          ),
-                        ),
-                      ],
-                    )
-                  else
-                    Text(
-                      lastSeen,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.mutedText,
-                      ),
-                    ),
-                ],
+              child: Text(
+                username,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.text,
+                ),
               ),
             ),
 
-            if (isOnline)
-              ElevatedButton.icon(
-                onPressed: onViewMatches ??
-                    () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                SharedMatchesScreen(friendName: username),
+            ElevatedButton.icon(
+              onPressed: onViewMatches ??
+                  () => Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => SharedMatchesScreen(
+                            friendId: friendId,
+                            friendName: username,
                           ),
                         ),
-                icon: const Icon(Icons.movie_outlined, size: 16),
-                label: const Text('View Matches'),
-                style: ElevatedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 10,
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  minimumSize: Size.zero,
+                      ),
+              icon: const Icon(Icons.movie_outlined, size: 16),
+              label: const Text('View Matches'),
+              style: ElevatedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
                 ),
-              )
-            else
-              OutlinedButton(
-                onPressed: onHistory,
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 14,
-                    vertical: 10,
-                  ),
-                  textStyle: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w700,
-                  ),
-                  minimumSize: Size.zero,
+                textStyle: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w700,
                 ),
-                child: const Text('History'),
+                minimumSize: Size.zero,
               ),
+            ),
           ],
         ),
       ),
