@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../theme/social_colors.dart';
 import '../widgets/app_bottom_nav_bar.dart';
 import '../widgets/auth_card.dart';
+import '../widgets/friend_request_card.dart';
 
 class FriendsScreen extends StatelessWidget {
   const FriendsScreen({super.key});
@@ -88,158 +89,16 @@ class FriendsScreen extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Request row — Julian_Vortex
-            AuthCard(
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 24,
-                    backgroundColor: AppColors.border,
-                    child: Icon(
-                      Icons.person,
-                      size: 24,
-                      color: AppColors.mutedText,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Julian_Vortex',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.text,
-                          ),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          'Loves Sci-Fi & Thrillers',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.mutedText,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Row(
-                    children: [
-                      // Decline
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppColors.border,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.close,
-                          size: 20,
-                          color: AppColors.text,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      // Accept
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.check,
-                          size: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            FriendRequestCard(
+              username: 'Julian_Vortex',
+              subtitle: 'Loves Sci-Fi & Thrillers',
             ),
 
             const SizedBox(height: 10),
 
-            // Request row — Neon_Sky
-            AuthCard(
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 24,
-                    backgroundColor: AppColors.border,
-                    child: Icon(
-                      Icons.person,
-                      size: 24,
-                      color: AppColors.mutedText,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Neon_Sky',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.text,
-                          ),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          'Wants to watch Dune',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.mutedText,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Row(
-                    children: [
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppColors.border,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.close,
-                          size: 20,
-                          color: AppColors.text,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Container(
-                        width: 40,
-                        height: 40,
-                        decoration: BoxDecoration(
-                          color: AppColors.primary,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Icon(
-                          Icons.check,
-                          size: 20,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+            FriendRequestCard(
+              username: 'Neon_Sky',
+              subtitle: 'Wants to watch Dune',
             ),
 
             const SizedBox(height: 24),
