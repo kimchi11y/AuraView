@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
-import '../theme/social_colors.dart';
 import '../widgets/app_bottom_nav_bar.dart';
-import '../widgets/auth_card.dart';
+import '../widgets/friend_card.dart';
 import '../widgets/friend_request_card.dart';
 
 class FriendsScreen extends StatelessWidget {
@@ -115,288 +114,26 @@ class FriendsScreen extends StatelessWidget {
 
             const SizedBox(height: 12),
 
-            // Friend row — Marcus_Cine (online)
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  left: BorderSide(
-                    color: SocialColors.matchAccent,
-                    width: 4,
-                  ),
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: AuthCard(
-                child: Row(
-                  children: [
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        const CircleAvatar(
-                          radius: 26,
-                          backgroundColor: AppColors.border,
-                          child: Icon(
-                            Icons.person,
-                            size: 26,
-                            color: AppColors.mutedText,
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: SocialColors.online,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Marcus_Cine',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.text,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: SocialColors.onlineBg,
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  'ONLINE',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
-                                    color: SocialColors.online,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              const Text(
-                                '84% Match',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.mutedText,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.movie_outlined, size: 16),
-                      label: const Text('View Matches'),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
-                        ),
-                        textStyle: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        minimumSize: Size.zero,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            FriendCard(
+              username: 'Marcus_Cine',
+              isOnline: true,
+              matchPercent: 84,
             ),
 
             const SizedBox(height: 10),
 
-            // Friend row — Sarah_Spins (online)
-            Container(
-              decoration: BoxDecoration(
-                border: Border(
-                  left: BorderSide(
-                    color: SocialColors.matchAccent,
-                    width: 4,
-                  ),
-                ),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: AuthCard(
-                child: Row(
-                  children: [
-                    Stack(
-                      clipBehavior: Clip.none,
-                      children: [
-                        const CircleAvatar(
-                          radius: 26,
-                          backgroundColor: AppColors.border,
-                          child: Icon(
-                            Icons.person,
-                            size: 26,
-                            color: AppColors.mutedText,
-                          ),
-                        ),
-                        Positioned(
-                          bottom: 0,
-                          right: 0,
-                          child: Container(
-                            width: 12,
-                            height: 12,
-                            decoration: BoxDecoration(
-                              color: SocialColors.online,
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                color: Colors.white,
-                                width: 2,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Sarah_Spins',
-                            style: TextStyle(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w700,
-                              color: AppColors.text,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 6,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: SocialColors.onlineBg,
-                                  borderRadius: BorderRadius.circular(999),
-                                ),
-                                child: Text(
-                                  'ONLINE',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w800,
-                                    color: SocialColors.online,
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 6),
-                              const Text(
-                                '92% Match',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.mutedText,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    ElevatedButton.icon(
-                      onPressed: () {},
-                      icon: const Icon(Icons.movie_outlined, size: 16),
-                      label: const Text('View Matches'),
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
-                          vertical: 10,
-                        ),
-                        textStyle: const TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        minimumSize: Size.zero,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            FriendCard(
+              username: 'Sarah_Spins',
+              isOnline: true,
+              matchPercent: 92,
             ),
 
             const SizedBox(height: 10),
 
-            // Friend row — Erik_Noir (offline)
-            AuthCard(
-              child: Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 26,
-                    backgroundColor: AppColors.border,
-                    child: Icon(
-                      Icons.person,
-                      size: 26,
-                      color: AppColors.mutedText,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Erik_Noir',
-                          style: TextStyle(
-                            fontSize: 15,
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.text,
-                          ),
-                        ),
-                        SizedBox(height: 2),
-                        Text(
-                          'Last seen 2h ago',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.mutedText,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  OutlinedButton(
-                    onPressed: () {},
-                    style: OutlinedButton.styleFrom(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 14,
-                        vertical: 10,
-                      ),
-                      textStyle: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      minimumSize: Size.zero,
-                    ),
-                    child: const Text('History'),
-                  ),
-                ],
-              ),
+            FriendCard(
+              username: 'Erik_Noir',
+              isOnline: false,
+              lastSeen: 'Last seen 2h ago',
             ),
 
             const SizedBox(height: 16),
