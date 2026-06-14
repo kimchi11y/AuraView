@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../screens/shared_matches_screen.dart';
 import '../theme/app_theme.dart';
 import '../theme/social_colors.dart';
 import '../widgets/auth_card.dart';
@@ -132,7 +133,13 @@ class FriendCard extends StatelessWidget {
 
             if (isOnline)
               ElevatedButton.icon(
-                onPressed: onViewMatches,
+                onPressed: onViewMatches ??
+                    () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                SharedMatchesScreen(friendName: username),
+                          ),
+                        ),
                 icon: const Icon(Icons.movie_outlined, size: 16),
                 label: const Text('View Matches'),
                 style: ElevatedButton.styleFrom(
