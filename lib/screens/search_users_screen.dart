@@ -1,5 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import '../services/friend_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auth_card.dart';
 
@@ -12,18 +15,52 @@ class SearchUsersScreen extends StatefulWidget {
 
 class _SearchUsersScreenState extends State<SearchUsersScreen> {
   final TextEditingController _controller = TextEditingController();
-  String _query = '';
+  final FriendService _friendService = FriendService();
 
-  final List<Map<String, String>> _dummyUsers = [
-    {'displayName': 'Alex Reel', 'username': 'Alex_Reel'},
-    {'displayName': 'Cinema Ghost', 'username': 'CinemaGhost'},
-    {'displayName': 'Pixel Director', 'username': 'PixelDirector'},
-  ];
+  String _query = '';
+  List<Map<String, dynamic>> _results = [];
+  bool _isSearching = false;
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  Future<void> _search(String query) async {
+    final trimmed = query.trim();
+
+    if (trimmed.isEmpty) {
+      setState(() {
+        _results = [];
+        _isSearching = false;
+      });
+      return;
+    }
+
+    setState(() => _isSearching = true);
+
+    final queryLower = trimmed.toLowerCase();
+    final currentUid = FirebaseAuth.instance.currentUser!.uid;
+
+    final snap = await FirebaseFirestore.instance
+        .collection('users')
+        .where('usernameLower', isGreaterThanOrEqualTo: queryLower)
+        .where('usernameLower', isLessThan: '$queryLower')
+        .limit(10)
+        .get();
+
+    final results = snap.docs
+        .where((doc) => doc.id != currentUid)
+        .map((doc) => doc.data())
+        .toList();
+
+    if (mounted) {
+      setState(() {
+        _results = results;
+        _isSearching = false;
+      });
+    }
   }
 
   @override
@@ -49,7 +86,10 @@ class _SearchUsersScreenState extends State<SearchUsersScreen> {
             child: TextFormField(
               controller: _controller,
               autofocus: true,
-              onChanged: (value) => setState(() => _query = value),
+              onChanged: (value) {
+                setState(() => _query = value);
+                _search(value);
+              },
               decoration: InputDecoration(
                 hintText: 'Search by username...',
                 prefixIcon: const Icon(
@@ -64,7 +104,10 @@ class _SearchUsersScreenState extends State<SearchUsersScreen> {
                         ),
                         onPressed: () {
                           _controller.clear();
-                          setState(() => _query = '');
+                          setState(() {
+                            _query = '';
+                            _results = [];
+                          });
                         },
                       )
                     : null,
@@ -75,19 +118,31 @@ class _SearchUsersScreenState extends State<SearchUsersScreen> {
           Expanded(
             child: _query.isEmpty
                 ? const _EmptyState()
-                : ListView.separated(
-                    physics: const ClampingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    itemCount: _dummyUsers.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: 10),
-                    itemBuilder: (context, index) {
-                      final user = _dummyUsers[index];
-                      return _UserResultCard(
-                        displayName: user['displayName']!,
-                        username: user['username']!,
-                      );
-                    },
-                  ),
+                : _isSearching
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColors.primary,
+                        ),
+                      )
+                    : _results.isEmpty
+                        ? const _NoResultsState()
+                        : ListView.separated(
+                            physics: const ClampingScrollPhysics(),
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            itemCount: _results.length,
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(height: 10),
+                            itemBuilder: (context, index) {
+                              final user = _results[index];
+                              return _UserResultCard(
+                                uid: user['uid'] as String,
+                                displayName: user['displayName'] as String,
+                                username: user['username'] as String,
+                                avatarUrl: user['avatarUrl'] as String? ?? '',
+                                friendService: _friendService,
+                              );
+                            },
+                          ),
           ),
         ],
       ),
@@ -108,10 +163,28 @@ class _EmptyState extends StatelessWidget {
           SizedBox(height: 12),
           Text(
             'Search by username to find friends',
-            style: TextStyle(
-              fontSize: 14,
-              color: AppColors.mutedText,
-            ),
+            style: TextStyle(fontSize: 14, color: AppColors.mutedText),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _NoResultsState extends StatelessWidget {
+  const _NoResultsState();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.person_search, size: 48, color: AppColors.mutedText),
+          SizedBox(height: 12),
+          Text(
+            'No users found',
+            style: TextStyle(fontSize: 14, color: AppColors.mutedText),
           ),
         ],
       ),
@@ -120,12 +193,18 @@ class _EmptyState extends StatelessWidget {
 }
 
 class _UserResultCard extends StatefulWidget {
+  final String uid;
   final String displayName;
   final String username;
+  final String avatarUrl;
+  final FriendService friendService;
 
   const _UserResultCard({
+    required this.uid,
     required this.displayName,
     required this.username,
+    required this.avatarUrl,
+    required this.friendService,
   });
 
   @override
@@ -133,17 +212,63 @@ class _UserResultCard extends StatefulWidget {
 }
 
 class _UserResultCardState extends State<_UserResultCard> {
-  _FriendStatus _status = _FriendStatus.none;
+  FriendStatus _status = FriendStatus.none;
+  bool _isLoadingStatus = true;
+  bool _isSending = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadStatus();
+  }
+
+  Future<void> _loadStatus() async {
+    final status = await widget.friendService.getFriendStatus(widget.uid);
+    if (mounted) {
+      setState(() {
+        _status = status;
+        _isLoadingStatus = false;
+      });
+    }
+  }
+
+  Future<void> _sendRequest() async {
+    setState(() => _isSending = true);
+    try {
+      await widget.friendService.sendFriendRequest(widget.uid);
+      if (mounted) setState(() => _status = FriendStatus.pendingSent);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return AuthCard(
       child: Row(
         children: [
-          const CircleAvatar(
+          CircleAvatar(
             radius: 22,
             backgroundColor: AppColors.border,
-            child: Icon(Icons.person, size: 22, color: AppColors.mutedText),
+            backgroundImage: widget.avatarUrl.isNotEmpty
+                ? NetworkImage(widget.avatarUrl)
+                : null,
+            child: widget.avatarUrl.isEmpty
+                ? const Icon(
+                    Icons.person,
+                    size: 22,
+                    color: AppColors.mutedText,
+                  )
+                : null,
           ),
 
           const SizedBox(width: 12),
@@ -173,7 +298,16 @@ class _UserResultCardState extends State<_UserResultCard> {
 
           const SizedBox(width: 12),
 
-          _buildButton(),
+          _isLoadingStatus
+              ? const SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: AppColors.primary,
+                  ),
+                )
+              : _buildButton(),
         ],
       ),
     );
@@ -181,18 +315,28 @@ class _UserResultCardState extends State<_UserResultCard> {
 
   Widget _buildButton() {
     switch (_status) {
-      case _FriendStatus.none:
+      case FriendStatus.none:
         return ElevatedButton(
-          onPressed: () => setState(() => _status = _FriendStatus.pending),
+          onPressed: _isSending ? null : _sendRequest,
           style: ElevatedButton.styleFrom(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+            textStyle:
+                const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
             minimumSize: Size.zero,
           ),
-          child: const Text('Add Friend'),
+          child: _isSending
+              ? const SizedBox(
+                  width: 14,
+                  height: 14,
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                    color: Colors.white,
+                  ),
+                )
+              : const Text('Add Friend'),
         );
 
-      case _FriendStatus.pending:
+      case FriendStatus.pendingSent:
         return OutlinedButton.icon(
           onPressed: null,
           icon: const Icon(Icons.schedule, size: 14),
@@ -201,12 +345,28 @@ class _UserResultCardState extends State<_UserResultCard> {
             foregroundColor: AppColors.mutedText,
             side: const BorderSide(color: AppColors.border),
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-            textStyle: const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+            textStyle:
+                const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
             minimumSize: Size.zero,
           ),
         );
 
-      case _FriendStatus.friends:
+      case FriendStatus.pendingReceived:
+        return OutlinedButton.icon(
+          onPressed: null,
+          icon: const Icon(Icons.reply, size: 14),
+          label: const Text('Respond'),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: AppColors.mutedText,
+            side: const BorderSide(color: AppColors.border),
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+            textStyle:
+                const TextStyle(fontSize: 13, fontWeight: FontWeight.w700),
+            minimumSize: Size.zero,
+          ),
+        );
+
+      case FriendStatus.friends:
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
           decoration: BoxDecoration(
@@ -232,5 +392,3 @@ class _UserResultCardState extends State<_UserResultCard> {
     }
   }
 }
-
-enum _FriendStatus { none, pending, friends }
