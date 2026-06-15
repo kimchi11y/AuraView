@@ -8,8 +8,11 @@ import '../services/swipe_service.dart';
 import '../services/friend_service.dart';
 import '../theme/app_theme.dart';
 import '../theme/social_colors.dart';
+import '../widgets/app_bottom_nav_bar.dart';
 import '../widgets/swipe_card.dart';
 import '../widgets/match_overlay.dart';
+import 'friends_screen.dart';
+import 'profile_screen.dart';
 import 'shared_matches_screen.dart';
 
 class DiscoverScreen extends StatefulWidget {
@@ -40,10 +43,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   bool _isLoadingMovies = false;
   bool _isLoadingInitial = true;
   Set<String> _swipedMovieIds = {};
+  bool _fakeMode = true;
 
   @override
   void initState() {
     super.initState();
+    MovieService.useFakeData = _fakeMode;
     if (widget.friendId != null) {
       _activeFriendId = widget.friendId;
       _activeFriendName = widget.friendName ?? 'Friend';
@@ -164,6 +169,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     }
   }
 
+  void _toggleFakeMode() {
+    setState(() {
+      _fakeMode = !_fakeMode;
+      MovieService.useFakeData = _fakeMode;
+    });
+    _loadMovies();
+  }
+
   Future<String> _fetchFriendAvatar(String friendId) async {
     final doc = await FirebaseFirestore.instance
         .collection('users')
@@ -216,6 +229,42 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             fontWeight: FontWeight.w800,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              _fakeMode ? Icons.science : Icons.science_outlined,
+              color: _fakeMode ? AppColors.primary : AppColors.mutedText,
+            ),
+            tooltip: _fakeMode ? 'Fake data ON' : 'Fake data OFF',
+            onPressed: _toggleFakeMode,
+          ),
+        ],
+      ),
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: 0,
+        onTap: (index) {
+          if (index == 0) return;
+          if (index == 1) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Matches screen not ready yet')),
+            );
+            return;
+          }
+          if (index == 2) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (_) => const FriendsScreen()),
+            );
+            return;
+          }
+          if (index == 3) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
+            );
+            return;
+          }
+        },
       ),
       body: _activeFriendId == null ? _buildFriendPicker() : _buildSwipeDeck(),
     );
@@ -324,12 +373,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 ignoring: i > 0,
                 child: Transform.scale(
                   scale: 1.0 - (i * 0.04),
-                  child: SwipeCard(
-                    movie: _movies[i],
-                    onSwipeRight: () {},
-                    onSwipeLeft: () {},
-                    isTopCard: false,
-                  ),
+                    child: SwipeCard(
+                      movie: _movies[i],
+                      onSwipeRight: (_) {},
+                      onSwipeLeft: (_) {},
+                      isTopCard: false,
+                    ),
                 ),
               ),
             ),
@@ -340,8 +389,8 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             top: 24,
             child: SwipeCard(
               movie: _movies[0],
-              onSwipeRight: () => _onSwipeRight(_movies[0]),
-              onSwipeLeft: () => _onSwipeLeft(_movies[0]),
+              onSwipeRight: (m) => _onSwipeRight(m),
+              onSwipeLeft: (m) => _onSwipeLeft(m),
               isTopCard: true,
             ),
           ),

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 import '../models/match.dart';
 import '../models/swipe.dart';
@@ -11,13 +12,18 @@ class SwipeService {
     required String friendId,
     required String movieId,
   }) async {
-    await _db.collection('swipes').add(
-      Swipe(
-        fromUserId: userId,
-        movieId: movieId,
-        liked: true,
-      ).toMap(),
-    );
+    try {
+      await _db.collection('swipes').add(
+        Swipe(
+          fromUserId: userId,
+          movieId: movieId,
+          liked: true,
+        ).toMap(),
+      );
+    } catch (e) {
+      debugPrint('SwipeService: Failed to write swipe: $e');
+      return MatchResult(matched: false, movieId: movieId);
+    }
 
     final friendSwipe = await _db
         .collection('swipes')
@@ -40,13 +46,18 @@ class SwipeService {
           .get();
 
       if (existing.docs.isEmpty) {
-        await _db.collection('matches').add(
-          Match(
-            userAId: userAId,
-            userBId: userBId,
-            movieId: movieId,
-          ).toMap(),
-        );
+        try {
+          await _db.collection('matches').add(
+            Match(
+              userAId: userAId,
+              userBId: userBId,
+              movieId: movieId,
+            ).toMap(),
+          );
+          debugPrint('SwipeService: Match created for movie $movieId');
+        } catch (e) {
+          debugPrint('SwipeService: Failed to create match: $e');
+        }
       }
 
       return MatchResult(matched: true, movieId: movieId);
@@ -59,13 +70,17 @@ class SwipeService {
     required String userId,
     required String movieId,
   }) async {
-    await _db.collection('swipes').add(
-      Swipe(
-        fromUserId: userId,
-        movieId: movieId,
-        liked: false,
-      ).toMap(),
-    );
+    try {
+      await _db.collection('swipes').add(
+        Swipe(
+          fromUserId: userId,
+          movieId: movieId,
+          liked: false,
+        ).toMap(),
+      );
+    } catch (e) {
+      debugPrint('SwipeService: Failed to write swipe: $e');
+    }
   }
 }
 

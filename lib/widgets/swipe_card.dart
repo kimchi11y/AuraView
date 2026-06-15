@@ -5,8 +5,8 @@ import '../theme/app_theme.dart';
 
 class SwipeCard extends StatefulWidget {
   final Movie movie;
-  final VoidCallback onSwipeRight;
-  final VoidCallback onSwipeLeft;
+  final void Function(Movie movie) onSwipeRight;
+  final void Function(Movie movie) onSwipeLeft;
   final bool isTopCard;
 
   const SwipeCard({
@@ -99,9 +99,9 @@ class _SwipeCardState extends State<SwipeCard>
     } else {
       setState(() => _isAnimating = false);
       if (_isFlyingRight) {
-        widget.onSwipeRight();
+        widget.onSwipeRight(widget.movie);
       } else {
-        widget.onSwipeLeft();
+        widget.onSwipeLeft(widget.movie);
       }
     }
   }

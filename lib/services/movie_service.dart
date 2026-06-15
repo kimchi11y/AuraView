@@ -1,8 +1,13 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+import '../data/fake_movies.dart';
 import '../models/movie.dart';
 
 class MovieService {
+  static bool useFakeData = false;
+
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   Future<List<Movie>> fetchMovies({
@@ -12,6 +17,10 @@ class MovieService {
     required String friendId,
     required String userId,
   }) async {
+    if (useFakeData) {
+      return _fetchFakeMovies(excludeIds: excludeIds, limit: limit);
+    }
+
     var query = _db.collection('movies_cache').limit(limit);
 
     if (startAfter != null) {
@@ -40,5 +49,19 @@ class MovieService {
     return snapshot.docs
         .map((doc) => doc['movieId'] as String)
         .toSet();
+  }
+
+  List<Movie> _fetchFakeMovies({
+    List<String>? excludeIds,
+    int limit = 10,
+  }) {
+    final excludeSet = excludeIds?.toSet() ?? {};
+    final available = fakeMovies
+        .where((m) => !excludeSet.contains(m.id))
+        .toList();
+
+    available.shuffle(Random());
+
+    return available.take(limit).toList();
   }
 }
