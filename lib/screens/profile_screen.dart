@@ -9,6 +9,7 @@ import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auth_card.dart';
+import 'friends_screen.dart';
 import 'login_screen.dart';
 import '../widgets/app_bottom_nav_bar.dart';
 
@@ -300,8 +301,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SnackBar(content: Text('Matches screen not ready yet')),
         );
       } else if (index == 2) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Friends screen not ready yet')),
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const FriendsScreen()),
         );
       }
     },
