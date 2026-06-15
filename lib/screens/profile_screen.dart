@@ -9,6 +9,7 @@ import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auth_card.dart';
+import 'discover_screen.dart';
 import 'friends_screen.dart';
 import 'login_screen.dart';
 import '../widgets/app_bottom_nav_bar.dart';
@@ -293,8 +294,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     currentIndex: 3,
     onTap: (index) {
       if (index == 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Discover screen not ready yet')),
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const DiscoverScreen()),
         );
       } else if (index == 1) {
         ScaffoldMessenger.of(context).showSnackBar(

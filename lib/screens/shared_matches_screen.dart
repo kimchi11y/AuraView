@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import '../widgets/auth_card.dart';
+import 'discover_screen.dart';
 
 class SharedMatchesScreen extends StatefulWidget {
   final String friendId;
@@ -112,30 +113,46 @@ class _SharedMatchesScreenState extends State<SharedMatchesScreen> {
                 final movies = snapshot.data ?? [];
 
                 if (movies.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.movie_outlined,
                           size: 48,
                           color: AppColors.mutedText,
                         ),
-                        SizedBox(height: 12),
-                        Text(
+                        const SizedBox(height: 12),
+                        const Text(
                           'No shared matches yet',
                           style: TextStyle(
                             fontSize: 14,
                             color: AppColors.mutedText,
                           ),
                         ),
-                        SizedBox(height: 4),
-                        Text(
+                        const SizedBox(height: 4),
+                        const Text(
                           'Start swiping to find movies you both like',
                           style: TextStyle(
                             fontSize: 13,
                             color: AppColors.mutedText,
                           ),
+                        ),
+                        const SizedBox(height: 20),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => DiscoverScreen(
+                                  friendId: widget.friendId,
+                                  friendName: widget.friendName,
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.swipe, size: 18),
+                          label: const Text('START SWIPING'),
                         ),
                       ],
                     ),
