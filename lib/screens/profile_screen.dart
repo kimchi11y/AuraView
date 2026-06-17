@@ -1,10 +1,10 @@
 import 'dart:io';
-
+import '../services/tmdb_api/tmdb_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-
+import 'movie_swipe/discover_screen.dart';
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../theme/app_theme.dart';
@@ -39,10 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       final File imageFile = File(pickedImage.path);
 
-      await profileService.uploadAvatar(
-        uid: uid,
-        imageFile: imageFile,
-      );
+      await profileService.uploadAvatar(uid: uid, imageFile: imageFile);
 
       if (!mounted) return;
 
@@ -54,10 +51,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: AppColors.error,
-        ),
+        SnackBar(content: Text(e.toString()), backgroundColor: AppColors.error),
       );
     } finally {
       if (mounted) {
@@ -78,205 +72,205 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   void showEditProfileSheet({
-  required String uid,
-  required String displayName,
-  required String username,
-  required String bio,
-  required String avatarUrl,
-}) {
-  final displayNameController = TextEditingController(text: displayName);
-  final usernameController = TextEditingController(text: username);
-  final bioController = TextEditingController(text: bio);
-  final avatarUrlController = TextEditingController(text: avatarUrl);
+    required String uid,
+    required String displayName,
+    required String username,
+    required String bio,
+    required String avatarUrl,
+  }) {
+    final displayNameController = TextEditingController(text: displayName);
+    final usernameController = TextEditingController(text: username);
+    final bioController = TextEditingController(text: bio);
+    final avatarUrlController = TextEditingController(text: avatarUrl);
 
-  final formKey = GlobalKey<FormState>();
-  bool isSaving = false;
+    final formKey = GlobalKey<FormState>();
+    bool isSaving = false;
 
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    backgroundColor: AppColors.surface,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.vertical(
-        top: Radius.circular(24),
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-    ),
-    builder: (context) {
-      return StatefulBuilder(
-        builder: (context, setModalState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              left: 16,
-              right: 16,
-              top: 20,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-            ),
-            child: SingleChildScrollView(
-              child: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Center(
-                      child: Container(
-                        width: 42,
-                        height: 4,
-                        decoration: BoxDecoration(
-                          color: AppColors.border,
-                          borderRadius: BorderRadius.circular(999),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: 16,
+                right: 16,
+                top: 20,
+                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+              ),
+              child: SingleChildScrollView(
+                child: Form(
+                  key: formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Center(
+                        child: Container(
+                          width: 42,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: AppColors.border,
+                            borderRadius: BorderRadius.circular(999),
+                          ),
                         ),
                       ),
-                    ),
 
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 24),
 
-                    Text(
-                      'Edit Profile',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
-
-                    const SizedBox(height: 8),
-
-                    Text(
-                      'Update your public profile information.',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    TextFormField(
-                      controller: displayNameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Display Name',
-                        prefixIcon: Icon(Icons.person_outline),
+                      Text(
+                        'Edit Profile',
+                        style: Theme.of(context).textTheme.headlineMedium,
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Display name is required';
-                        }
-                        return null;
-                      },
-                    ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 8),
 
-                    TextFormField(
-                      controller: usernameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Username',
-                        prefixIcon: Icon(Icons.alternate_email),
+                      Text(
+                        'Update your public profile information.',
+                        style: Theme.of(context).textTheme.bodyMedium,
                       ),
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Username is required';
-                        }
-                        if (value.trim().contains(' ')) {
-                          return 'Username cannot contain spaces';
-                        }
-                        return null;
-                      },
-                    ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 24),
 
-                    TextFormField(
-                      controller: bioController,
-                      maxLines: 3,
-                      decoration: const InputDecoration(
-                        labelText: 'Bio',
-                        hintText: 'Tell people about your movie taste',
-                        prefixIcon: Icon(Icons.info_outline),
+                      TextFormField(
+                        controller: displayNameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Display Name',
+                          prefixIcon: Icon(Icons.person_outline),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Display name is required';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
 
-                    const SizedBox(height: 16),
+                      const SizedBox(height: 16),
 
-                    TextFormField(
-                      controller: avatarUrlController,
-                      decoration: const InputDecoration(
-                        labelText: 'Avatar URL',
-                        hintText: 'Paste image link here',
-                        prefixIcon: Icon(Icons.image_outlined),
+                      TextFormField(
+                        controller: usernameController,
+                        decoration: const InputDecoration(
+                          labelText: 'Username',
+                          prefixIcon: Icon(Icons.alternate_email),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Username is required';
+                          }
+                          if (value.trim().contains(' ')) {
+                            return 'Username cannot contain spaces';
+                          }
+                          return null;
+                        },
                       ),
-                    ),
 
-                    const SizedBox(height: 24),
+                      const SizedBox(height: 16),
 
-                    ElevatedButton(
-                      onPressed: isSaving
-                          ? null
-                          : () async {
-                              if (!formKey.currentState!.validate()) return;
+                      TextFormField(
+                        controller: bioController,
+                        maxLines: 3,
+                        decoration: const InputDecoration(
+                          labelText: 'Bio',
+                          hintText: 'Tell people about your movie taste',
+                          prefixIcon: Icon(Icons.info_outline),
+                        ),
+                      ),
 
-                              setModalState(() {
-                                isSaving = true;
-                              });
+                      const SizedBox(height: 16),
 
-                              try {
-                                await profileService.updateUserProfile(
-                                  uid: uid,
-                                  displayName: displayNameController.text,
-                                  username: usernameController.text,
-                                  bio: bioController.text,
-                                  avatarUrl: avatarUrlController.text,
-                                );
+                      TextFormField(
+                        controller: avatarUrlController,
+                        decoration: const InputDecoration(
+                          labelText: 'Avatar URL',
+                          hintText: 'Paste image link here',
+                          prefixIcon: Icon(Icons.image_outlined),
+                        ),
+                      ),
 
-                                if (!mounted) return;
+                      const SizedBox(height: 24),
 
-                                Navigator.pop(context);
+                      ElevatedButton(
+                        onPressed: isSaving
+                            ? null
+                            : () async {
+                                if (!formKey.currentState!.validate()) return;
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Profile updated successfully'),
-                                    backgroundColor: AppColors.primary,
-                                  ),
-                                );
-                              } catch (e) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(e.toString()),
-                                    backgroundColor: AppColors.error,
-                                  ),
-                                );
-                              } finally {
                                 setModalState(() {
-                                  isSaving = false;
+                                  isSaving = true;
                                 });
-                              }
-                            },
-                      child: isSaving
-                          ? const SizedBox(
-                              width: 22,
-                              height: 22,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ),
-                            )
-                          : const Text('SAVE CHANGES'),
-                    ),
 
-                    const SizedBox(height: 12),
+                                try {
+                                  await profileService.updateUserProfile(
+                                    uid: uid,
+                                    displayName: displayNameController.text,
+                                    username: usernameController.text,
+                                    bio: bioController.text,
+                                    avatarUrl: avatarUrlController.text,
+                                  );
 
-                    OutlinedButton(
-                      onPressed: isSaving
-                          ? null
-                          : () {
-                              Navigator.pop(context);
-                            },
-                      child: const Text('CANCEL'),
-                    ),
-                  ],
+                                  if (!mounted) return;
+
+                                  Navigator.pop(context);
+
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Profile updated successfully',
+                                      ),
+                                      backgroundColor: AppColors.primary,
+                                    ),
+                                  );
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(e.toString()),
+                                      backgroundColor: AppColors.error,
+                                    ),
+                                  );
+                                } finally {
+                                  setModalState(() {
+                                    isSaving = false;
+                                  });
+                                }
+                              },
+                        child: isSaving
+                            ? const SizedBox(
+                                width: 22,
+                                height: 22,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text('SAVE CHANGES'),
+                      ),
+
+                      const SizedBox(height: 12),
+
+                      OutlinedButton(
+                        onPressed: isSaving
+                            ? null
+                            : () {
+                                Navigator.pop(context);
+                              },
+                        child: const Text('CANCEL'),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          );
-        },
-      );
-    },
-  );
-}
+            );
+          },
+        );
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -287,45 +281,41 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return Scaffold(
-  backgroundColor: AppColors.background,
+      backgroundColor: AppColors.background,
 
-  bottomNavigationBar: AppBottomNavBar(
-    currentIndex: 3,
-    onTap: (index) {
-      if (index == 0) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Discover screen not ready yet')),
-        );
-      } else if (index == 1) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Matches screen not ready yet')),
-        );
-      } else if (index == 2) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const FriendsScreen()),
-        );
-      }
-    },
-  ),
+      bottomNavigationBar: AppBottomNavBar(
+        currentIndex: 3,
+        onTap: (index) {
+          if (index == 0) {
+            // ROUTE TO YOUR NEW DISCOVER SCREEN
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DiscoverScreen()),
+            );
+          } else if (index == 1) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Matches screen not ready yet')),
+            );
+          } else if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const FriendsScreen()),
+            );
+          }
+        },
+      ),
 
-  appBar: AppBar(
+      appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
         title: const Text(
           'Profile',
-          style: TextStyle(
-            color: AppColors.text,
-            fontWeight: FontWeight.w800,
-          ),
+          style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w800),
         ),
         actions: [
           IconButton(
             onPressed: handleLogout,
-            icon: const Icon(
-              Icons.logout,
-              color: AppColors.text,
-            ),
+            icon: const Icon(Icons.logout, color: AppColors.text),
           ),
         ],
       ),
@@ -337,16 +327,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
-              child: CircularProgressIndicator(
-                color: AppColors.primary,
-              ),
+              child: CircularProgressIndicator(color: AppColors.primary),
             );
           }
 
           if (!snapshot.hasData || !snapshot.data!.exists) {
-            return const Center(
-              child: Text('User profile not found'),
-            );
+            return const Center(child: Text('User profile not found'));
           }
 
           final data = snapshot.data!.data()!;
@@ -516,6 +502,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       icon: const Icon(Icons.logout),
                       label: const Text('LOGOUT'),
                     ),
+
+                    const SizedBox(height: 16),
+
+                    // TEMPORARY TEST BUTTON FOR MEMBER C
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                      ),
+                      onPressed: () async {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Fetching movies from TMDB...'),
+                          ),
+                        );
+
+                        try {
+                          final movies = await TmdbService()
+                              .fetchAndCacheMovies();
+
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  'Success! Cached ${movies.length} movies.',
+                                ),
+                                backgroundColor: Colors.green,
+                              ),
+                            );
+                          }
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error: $e'),
+                                backgroundColor: AppColors.error,
+                              ),
+                            );
+                          }
+                        }
+                      },
+                      icon: const Icon(Icons.api, color: Colors.white),
+                      label: const Text(
+                        'TEST TMDB API',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
                   ],
                 ),
               ),
@@ -543,10 +577,7 @@ class ProfileInfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(
-          icon,
-          color: AppColors.primary,
-        ),
+        Icon(icon, color: AppColors.primary),
         const SizedBox(width: 12),
         Expanded(
           child: Column(
