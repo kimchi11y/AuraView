@@ -43,12 +43,9 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   bool _isLoadingMovies = false;
   bool _isLoadingInitial = true;
   Set<String> _swipedMovieIds = {};
-  bool _fakeMode = true;
-
   @override
   void initState() {
     super.initState();
-    MovieService.useFakeData = _fakeMode;
     if (widget.friendId != null) {
       _activeFriendId = widget.friendId;
       _activeFriendName = widget.friendName ?? 'Friend';
@@ -169,14 +166,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     }
   }
 
-  void _toggleFakeMode() {
-    setState(() {
-      _fakeMode = !_fakeMode;
-      MovieService.useFakeData = _fakeMode;
-    });
-    _loadMovies();
-  }
-
   Future<String> _fetchFriendAvatar(String friendId) async {
     final doc = await FirebaseFirestore.instance
         .collection('users')
@@ -229,16 +218,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
             fontWeight: FontWeight.w800,
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(
-              _fakeMode ? Icons.science : Icons.science_outlined,
-              color: _fakeMode ? AppColors.primary : AppColors.mutedText,
-            ),
-            tooltip: _fakeMode ? 'Fake data ON' : 'Fake data OFF',
-            onPressed: _toggleFakeMode,
-          ),
-        ],
+
       ),
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: 0,

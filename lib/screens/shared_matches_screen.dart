@@ -2,8 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-import '../data/fake_movies.dart';
-import '../services/movie_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auth_card.dart';
 import 'discover_screen.dart';
@@ -48,24 +46,6 @@ class _SharedMatchesScreenState extends State<SharedMatchesScreen> {
     ];
 
     if (matchDocs.isEmpty) return [];
-
-    // Fetch movie details. In fake mode, look up from local data
-    // since fake movie IDs don't exist in movies_cache.
-    if (MovieService.useFakeData) {
-      final fakeMovieById = {for (final m in fakeMovies) m.id: m};
-      return matchDocs.map((doc) {
-        final movieId = doc['movieId'] as String;
-        final movie = fakeMovieById[movieId];
-        if (movie == null) return <String, dynamic>{};
-        return <String, dynamic>{
-          'title': movie.title,
-          'year': movie.year,
-          'genres': movie.genres,
-          'posterUrl': movie.posterUrl,
-          'rating': movie.rating,
-        };
-      }).where((m) => m.isNotEmpty).toList();
-    }
 
     // Fetch movie details from movies_cache for each match.
     final movies = await Future.wait(
