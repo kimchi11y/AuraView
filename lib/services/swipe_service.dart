@@ -1,8 +1,51 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
-import '../models/match.dart';
-import '../models/swipe.dart';
+class Swipe {
+  final String fromUserId;
+  final String movieId;
+  final bool liked;
+  final DateTime? swipedAt;
+
+  const Swipe({
+    required this.fromUserId,
+    required this.movieId,
+    required this.liked,
+    this.swipedAt,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'fromUserId': fromUserId,
+      'movieId': movieId,
+      'liked': liked,
+      'swipedAt': FieldValue.serverTimestamp(),
+    };
+  }
+}
+
+class Match {
+  final String userAId;
+  final String userBId;
+  final String movieId;
+  final DateTime? matchedAt;
+
+  const Match({
+    required this.userAId,
+    required this.userBId,
+    required this.movieId,
+    this.matchedAt,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'userAId': userAId,
+      'userBId': userBId,
+      'movieId': movieId,
+      'matchedAt': FieldValue.serverTimestamp(),
+    };
+  }
+}
 
 class SwipeService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;

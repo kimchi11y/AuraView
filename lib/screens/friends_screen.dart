@@ -4,10 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../services/friend_service.dart';
 import '../theme/app_theme.dart';
-import '../widgets/app_bottom_nav_bar.dart';
 import '../widgets/friend_card.dart';
 import '../widgets/friend_request_card.dart';
-import 'discover_screen.dart';
 import 'search_users_screen.dart';
 
 class FriendsScreen extends StatefulWidget {
@@ -27,6 +25,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
+        automaticallyImplyLeading: false,
         title: const Text(
           'Friends List',
           style: TextStyle(
@@ -34,26 +33,6 @@ class _FriendsScreenState extends State<FriendsScreen> {
             fontWeight: FontWeight.w800,
           ),
         ),
-      ),
-      bottomNavigationBar: AppBottomNavBar(
-        currentIndex: 2,
-        onTap: (index) {
-          if (index == 2) return;
-          if (index == 3) {
-            Navigator.pop(context);
-            return;
-          }
-          if (index == 0) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (_) => const DiscoverScreen()),
-            );
-            return;
-          }
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Screen not ready yet')),
-          );
-        },
       ),
       body: SingleChildScrollView(
         physics: const ClampingScrollPhysics(),
@@ -424,6 +403,7 @@ class _FriendItemState extends State<_FriendItem> {
       friendId: widget.friendId,
       username: username,
       avatarUrl: avatarUrl,
+      showViewMatches: false,
     );
   }
 }

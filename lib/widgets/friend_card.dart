@@ -11,6 +11,10 @@ class FriendCard extends StatelessWidget {
   final String avatarUrl;
   final bool isOnline;
   final VoidCallback? onViewMatches;
+  final bool showViewMatches;
+  final String? buttonLabel;
+  final IconData? buttonIcon;
+  final VoidCallback? onTap;
 
   const FriendCard({
     super.key,
@@ -19,6 +23,10 @@ class FriendCard extends StatelessWidget {
     this.avatarUrl = '',
     this.isOnline = false,
     this.onViewMatches,
+    this.showViewMatches = true,
+    this.buttonLabel,
+    this.buttonIcon,
+    this.onTap,
   });
 
   @override
@@ -82,30 +90,35 @@ class FriendCard extends StatelessWidget {
               ),
             ),
 
-            ElevatedButton.icon(
-              onPressed: onViewMatches ??
-                  () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => SharedMatchesScreen(
-                            friendId: friendId,
-                            friendName: username,
-                          ),
-                        ),
-                      ),
-              icon: const Icon(Icons.movie_outlined, size: 16),
-              label: const Text('View Matches'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
+            if (showViewMatches)
+              ElevatedButton.icon(
+                onPressed: onTap ??
+                    (onViewMatches ??
+                        () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => SharedMatchesScreen(
+                                  friendId: friendId,
+                                  friendName: username,
+                                ),
+                              ),
+                            )),
+                icon: Icon(
+                  buttonIcon ?? Icons.movie_outlined,
+                  size: 16,
                 ),
-                textStyle: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
+                label: Text(buttonLabel ?? 'View Matches'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  minimumSize: Size.zero,
                 ),
-                minimumSize: Size.zero,
               ),
-            ),
           ],
         ),
       ),

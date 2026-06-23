@@ -4,14 +4,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'movie_swipe/discover_screen.dart';
+import 'choose_friend_screen.dart';
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auth_card.dart';
-import 'discover_screen.dart';
 import 'friends_screen.dart';
 import 'login_screen.dart';
+import 'matches_screen.dart';
 import '../widgets/app_bottom_nav_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -26,6 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker picker = ImagePicker();
 
   bool isUploading = false;
+  int _currentIndex = 3;
 
   Future<void> pickAndUploadAvatar(String uid) async {
     final XFile? pickedImage = await picker.pickImage(
@@ -285,26 +286,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   backgroundColor: AppColors.background,
 
   bottomNavigationBar: AppBottomNavBar(
-    currentIndex: 3,
-    onTap: (index) {
-      if (index == 0) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const DiscoverScreen()),
-        );
-      } else if (index == 1) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Matches screen not ready yet')),
-        );
-      } else if (index == 2) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const FriendsScreen()),
-        );
-      }
-    },
+    currentIndex: _currentIndex,
+    onTap: (index) => setState(() => _currentIndex = index),
   ),
 
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          const ChooseFriendScreen(),
+          const MatchesScreen(),
+          const FriendsScreen(),
+          _buildProfileBody(user),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileBody(User user) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
@@ -505,7 +505,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     const SizedBox(height: 16),
 
-                    // TEMPORARY TEST BUTTON FOR MEMBER C
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
