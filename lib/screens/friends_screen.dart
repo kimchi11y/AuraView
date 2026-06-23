@@ -403,6 +403,7 @@ class _FriendItemState extends State<_FriendItem> {
       friendId: widget.friendId,
       username: username,
       avatarUrl: avatarUrl,
+      showViewMatches: false,
     );
   }
 }

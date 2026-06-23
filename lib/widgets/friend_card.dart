@@ -11,6 +11,7 @@ class FriendCard extends StatelessWidget {
   final String avatarUrl;
   final bool isOnline;
   final VoidCallback? onViewMatches;
+  final bool showViewMatches;
 
   const FriendCard({
     super.key,
@@ -19,6 +20,7 @@ class FriendCard extends StatelessWidget {
     this.avatarUrl = '',
     this.isOnline = false,
     this.onViewMatches,
+    this.showViewMatches = true,
   });
 
   @override
@@ -82,30 +84,31 @@ class FriendCard extends StatelessWidget {
               ),
             ),
 
-            ElevatedButton.icon(
-              onPressed: onViewMatches ??
-                  () => Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => SharedMatchesScreen(
-                            friendId: friendId,
-                            friendName: username,
+            if (showViewMatches)
+              ElevatedButton.icon(
+                onPressed: onViewMatches ??
+                    () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => SharedMatchesScreen(
+                              friendId: friendId,
+                              friendName: username,
+                            ),
                           ),
                         ),
-                      ),
-              icon: const Icon(Icons.movie_outlined, size: 16),
-              label: const Text('View Matches'),
-              style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 10,
+                icon: const Icon(Icons.movie_outlined, size: 16),
+                label: const Text('View Matches'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
+                  textStyle: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                  ),
+                  minimumSize: Size.zero,
                 ),
-                textStyle: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w700,
-                ),
-                minimumSize: Size.zero,
               ),
-            ),
           ],
         ),
       ),

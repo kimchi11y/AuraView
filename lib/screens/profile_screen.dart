@@ -11,6 +11,7 @@ import '../theme/app_theme.dart';
 import '../widgets/auth_card.dart';
 import 'friends_screen.dart';
 import 'login_screen.dart';
+import 'matches_screen.dart';
 import '../widgets/app_bottom_nav_bar.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -293,7 +294,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         index: _currentIndex,
         children: [
           const DiscoverScreen(),
-          const _MatchesPlaceholder(),
+          const MatchesScreen(),
           const FriendsScreen(),
           _buildProfileBody(user),
         ],
@@ -554,27 +555,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           );
         },
-      ),
-    );
-  }
-}
-
-class _MatchesPlaceholder extends StatelessWidget {
-  const _MatchesPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Scaffold(
-      backgroundColor: AppColors.background,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.favorite_border_rounded, size: 48, color: AppColors.mutedText),
-            SizedBox(height: 12),
-            Text('Matches coming soon', style: TextStyle(fontSize: 14, color: AppColors.mutedText)),
-          ],
-        ),
       ),
     );
   }
