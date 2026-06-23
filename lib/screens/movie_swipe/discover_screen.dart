@@ -9,6 +9,7 @@ import '../../services/swipe_service.dart';
 import '../../widgets/match_overlay.dart';
 import '../shared_matches_screen.dart';
 import 'filter_bottom_sheet.dart';
+import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 
 class DiscoverScreen extends StatefulWidget {
   final String? friendId;
@@ -89,12 +90,14 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     }
   }
 
-  void _handleSwipe(bool isLike) async {
-    if (_movies.isEmpty) return;
+  Future<bool> _onSwipe(
+    int previousIndex,
+    int? currentIndex,
+    CardSwiperDirection direction,
+  ) async {
+    final movie = _movies[previousIndex];
 
-    final movie = _movies.first;
-
-    if (isLike) {
+    if (direction == CardSwiperDirection.right) {
       if (widget.friendId != null) {
         final result = await _swipeService.swipeRight(
           userId: FirebaseAuth.instance.currentUser!.uid,
@@ -142,15 +145,12 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
       }
     }
 
-    setState(() {
-      _movies.removeAt(0); // Remove the card from the deck
-    });
-
-    // Infinite Pagination Trigger: Fetch more when deck gets low
-    if (_movies.length < 5) {
+    if (currentIndex != null && _movies.length - currentIndex < 5) {
       _currentPage++;
       _fetchMovies();
     }
+
+    return true;
   }
 
   @override
@@ -193,24 +193,27 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                 child: CircularProgressIndicator(color: AppColors.primary),
               )
             : _movies.isEmpty
-            ? const Center(
-                child: Text(
-                  'No more movies found.',
-                  style: TextStyle(color: AppColors.mutedText),
-                ),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    // The Movie Card
-                    Expanded(
-                      child: Container(
+                ? const Center(
+                    child: Text(
+                      'No more movies found.',
+                      style: TextStyle(color: AppColors.mutedText),
+                    ),
+                  )
+                : CardSwiper(
+                    cardsCount: _movies.length,
+                    cardBuilder: (
+                      context,
+                      index,
+                      percentThresholdX,
+                      percentThresholdY,
+                    ) {
+                      final movie = _movies[index];
+                      return Container(
                         width: double.infinity,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           image: DecorationImage(
-                            image: NetworkImage(_movies.first.posterUrl),
+                            image: NetworkImage(movie.posterUrl),
                             fit: BoxFit.cover,
                           ),
                           boxShadow: [
@@ -240,7 +243,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                _movies.first.title,
+                                movie.title,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 24,
@@ -249,7 +252,7 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                '${_movies.first.year} • ★ ${_movies.first.rating}',
+                                '${movie.year}  \u2022  \u2605 ${movie.rating}',
                                 style: const TextStyle(
                                   color: Colors.white70,
                                   fontSize: 16,
@@ -258,38 +261,21 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                             ],
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    // The Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        FloatingActionButton(
-                          heroTag: 'pass',
-                          backgroundColor: Colors.white,
-                          onPressed: () => _handleSwipe(false),
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.red,
-                            size: 32,
-                          ),
-                        ),
-                        FloatingActionButton(
-                          heroTag: 'like',
-                          backgroundColor: AppColors.primary,
-                          onPressed: () => _handleSwipe(true),
-                          child: const Icon(
-                            Icons.favorite,
-                            color: Colors.white,
-                            size: 32,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+                      );
+                    },
+                    onSwipe: _onSwipe,
+                    onEnd: () {
+                      if (_movies.isNotEmpty) {
+                        _currentPage++;
+                        _fetchMovies();
+                      }
+                    },
+                    allowedSwipeDirection:
+                        AllowedSwipeDirection.symmetric(horizontal: true),
+                    isLoop: false,
+                    numberOfCardsDisplayed: 2,
+                    padding: const EdgeInsets.all(24),
+                  ),
       ),
     );
   }
