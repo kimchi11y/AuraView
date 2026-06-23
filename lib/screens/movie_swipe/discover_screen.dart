@@ -1,14 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../../theme/app_theme.dart';
-import '../../widgets/app_bottom_nav_bar.dart';
 import '../../services/tmdb_api/tmdb_service.dart';
 import '../../services/tmdb_api/movie_model.dart';
 import '../../services/swipe_service.dart';
 import 'filter_bottom_sheet.dart';
 
 class DiscoverScreen extends StatefulWidget {
-  const DiscoverScreen({super.key});
+  final String? friendId;
+  final String? friendName;
+
+  const DiscoverScreen({super.key, this.friendId, this.friendName});
 
   @override
   State<DiscoverScreen> createState() => _DiscoverScreenState();
@@ -66,14 +69,22 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
     final movie = _movies.first;
 
     if (isLike) {
-      // Trigger Phase 4 Backend Logic
-      await _swipeService.swipeRight(movie.id);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Liked ${movie.title}!'),
-          duration: const Duration(milliseconds: 500),
-        ),
-      );
+      if (widget.friendId != null) {
+        // Friend-targeted swipe: record and check for a match.
+        await _swipeService.swipeRight(
+          userId: FirebaseAuth.instance.currentUser!.uid,
+          friendId: widget.friendId!,
+          movieId: movie.id,
+        );
+      }
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Liked ${movie.title}!'),
+            duration: const Duration(milliseconds: 500),
+          ),
+        );
+      }
     }
 
     setState(() {
@@ -91,23 +102,10 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.background,
-      bottomNavigationBar: AppBottomNavBar(
-        currentIndex: 0,
-        onTap: (index) {
-          if (index == 0) return;
-          if (index == 3) {
-            Navigator.pop(context);
-            return;
-          }
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Screen not ready yet')));
-        },
-      ),
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: widget.friendId != null,
         title: const Text(
           'Discover',
           style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w800),

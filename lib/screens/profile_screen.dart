@@ -9,7 +9,6 @@ import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/auth_card.dart';
-import 'discover_screen.dart';
 import 'friends_screen.dart';
 import 'login_screen.dart';
 import '../widgets/app_bottom_nav_bar.dart';
@@ -26,6 +25,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker picker = ImagePicker();
 
   bool isUploading = false;
+  int _currentIndex = 3;
 
   Future<void> pickAndUploadAvatar(String uid) async {
     final XFile? pickedImage = await picker.pickImage(
@@ -285,26 +285,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
   backgroundColor: AppColors.background,
 
   bottomNavigationBar: AppBottomNavBar(
-    currentIndex: 3,
-    onTap: (index) {
-      if (index == 0) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const DiscoverScreen()),
-        );
-      } else if (index == 1) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Matches screen not ready yet')),
-        );
-      } else if (index == 2) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const FriendsScreen()),
-        );
-      }
-    },
+    currentIndex: _currentIndex,
+    onTap: (index) => setState(() => _currentIndex = index),
   ),
 
+      body: IndexedStack(
+        index: _currentIndex,
+        children: [
+          const DiscoverScreen(),
+          const _MatchesPlaceholder(),
+          const FriendsScreen(),
+          _buildProfileBody(user),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildProfileBody(User user) {
+    return Scaffold(
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
@@ -505,7 +504,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                     const SizedBox(height: 16),
 
-                    // TEMPORARY TEST BUTTON FOR MEMBER C
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
@@ -556,6 +554,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _MatchesPlaceholder extends StatelessWidget {
+  const _MatchesPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: AppColors.background,
+      body: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.favorite_border_rounded, size: 48, color: AppColors.mutedText),
+            SizedBox(height: 12),
+            Text('Matches coming soon', style: TextStyle(fontSize: 14, color: AppColors.mutedText)),
+          ],
+        ),
       ),
     );
   }

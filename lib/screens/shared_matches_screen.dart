@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import '../widgets/auth_card.dart';
-import 'discover_screen.dart';
+import 'movie_swipe/discover_screen.dart';
 
 class SharedMatchesScreen extends StatefulWidget {
   final String friendId;
@@ -141,7 +141,7 @@ class _SharedMatchesScreenState extends State<SharedMatchesScreen> {
                         const SizedBox(height: 20),
                         ElevatedButton.icon(
                           onPressed: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => DiscoverScreen(
