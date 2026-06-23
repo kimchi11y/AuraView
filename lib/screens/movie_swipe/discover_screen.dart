@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -5,6 +6,8 @@ import '../../theme/app_theme.dart';
 import '../../services/tmdb_api/tmdb_service.dart';
 import '../../services/tmdb_api/movie_model.dart';
 import '../../services/swipe_service.dart';
+import '../../widgets/match_overlay.dart';
+import '../shared_matches_screen.dart';
 import 'filter_bottom_sheet.dart';
 
 class DiscoverScreen extends StatefulWidget {
@@ -25,10 +28,33 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
   bool _isLoading = true;
   int _currentPage = 1;
 
+  String _userAvatarUrl = '';
+  String _friendAvatarUrl = '';
+
   @override
   void initState() {
     super.initState();
     _fetchMovies();
+    _loadAvatars();
+  }
+
+  Future<void> _loadAvatars() async {
+    if (widget.friendId == null) return;
+
+    final db = FirebaseFirestore.instance;
+    final currentUid = FirebaseAuth.instance.currentUser!.uid;
+
+    final results = await Future.wait([
+      db.collection('users').doc(currentUid).get(),
+      db.collection('users').doc(widget.friendId!).get(),
+    ]);
+
+    if (mounted) {
+      setState(() {
+        _userAvatarUrl = results[0].data()?['avatarUrl'] as String? ?? '';
+        _friendAvatarUrl = results[1].data()?['avatarUrl'] as String? ?? '';
+      });
+    }
   }
 
   Future<void> _fetchMovies({
@@ -70,19 +96,48 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
 
     if (isLike) {
       if (widget.friendId != null) {
-        // Friend-targeted swipe: record and check for a match.
-        await _swipeService.swipeRight(
+        final result = await _swipeService.swipeRight(
           userId: FirebaseAuth.instance.currentUser!.uid,
           friendId: widget.friendId!,
           movieId: movie.id,
         );
+
+        if (result.matched && mounted) {
+          MatchOverlay.show(
+            context: context,
+            friendName: widget.friendName!,
+            friendAvatarUrl: _friendAvatarUrl,
+            userAvatarUrl: _userAvatarUrl,
+            movieTitle: movie.title,
+            moviePosterUrl: movie.posterUrl,
+            onKeepSwiping: () {},
+            onViewMatches: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => SharedMatchesScreen(
+                    friendId: widget.friendId!,
+                    friendName: widget.friendName!,
+                  ),
+                ),
+              );
+            },
+          );
+        }
       }
-      if (context.mounted) {
+      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Liked ${movie.title}!'),
             duration: const Duration(milliseconds: 500),
           ),
+        );
+      }
+    } else {
+      if (widget.friendId != null) {
+        _swipeService.swipeLeft(
+          userId: FirebaseAuth.instance.currentUser!.uid,
+          movieId: movie.id,
         );
       }
     }

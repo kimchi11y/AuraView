@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'movie_swipe/discover_screen.dart';
+import 'choose_friend_screen.dart';
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../theme/app_theme.dart';
@@ -293,7 +293,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: IndexedStack(
         index: _currentIndex,
         children: [
-          const DiscoverScreen(),
+          const ChooseFriendScreen(),
           const MatchesScreen(),
           const FriendsScreen(),
           _buildProfileBody(user),
