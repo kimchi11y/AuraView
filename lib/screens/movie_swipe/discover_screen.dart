@@ -9,7 +9,6 @@ import '../../widgets/match_overlay.dart';
 import '../shared_matches_screen.dart';
 import 'filter_bottom_sheet.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
-import 'dart:math';
 
 class DiscoverScreen extends StatefulWidget {
   final String? friendId;
