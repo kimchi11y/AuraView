@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
-import 'package:google_fonts/google_fonts.dart';
-
 import '../../theme/app_theme.dart';
 import '../../services/tmdb_api/tmdb_service.dart';
 import '../../services/tmdb_api/movie_model.dart';
@@ -12,6 +9,7 @@ import '../../widgets/match_overlay.dart';
 import '../shared_matches_screen.dart';
 import 'filter_bottom_sheet.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
+import 'dart:math';
 
 class DiscoverScreen extends StatefulWidget {
   final String? friendId;
@@ -308,15 +306,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                             color: Colors.white,
                                             size: 24,
                                           ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            'LIKE',
-                                            style: GoogleFonts.inter(
-                                              color: Colors.white,
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w800,
-                                            ),
-                                          ),
                                         ],
                                       ),
                                     ),
@@ -352,15 +341,6 @@ class _DiscoverScreenState extends State<DiscoverScreen> {
                                             Icons.close,
                                             color: Colors.white,
                                             size: 28,
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            'NOPE',
-                                            style: GoogleFonts.inter(
-                                              color: Colors.white,
-                                              fontSize: 28,
-                                              fontWeight: FontWeight.w800,
-                                            ),
                                           ),
                                         ],
                                       ),

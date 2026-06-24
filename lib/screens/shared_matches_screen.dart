@@ -124,10 +124,10 @@ class _SharedMatchesScreenState extends State<SharedMatchesScreen> {
                         ),
                         const SizedBox(height: 12),
                         const Text(
-                          'No shared matches yet',
+                          'No shared matches yet!',
                           style: TextStyle(
-                            fontSize: 14,
-                            color: AppColors.mutedText,
+                            fontSize: 16,
+                            color: AppColors.text,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -138,8 +138,16 @@ class _SharedMatchesScreenState extends State<SharedMatchesScreen> {
                             color: AppColors.mutedText,
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                              vertical: 15,
+                            ),
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
                           onPressed: () {
                             Navigator.push(
                               context,
