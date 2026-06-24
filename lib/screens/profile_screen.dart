@@ -1,5 +1,4 @@
 import 'dart:io';
-import '../services/tmdb_api/tmdb_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -312,12 +311,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           'Profile',
           style: TextStyle(color: AppColors.text, fontWeight: FontWeight.w800),
         ),
-        actions: [
-          IconButton(
-            onPressed: handleLogout,
-            icon: const Icon(Icons.logout, color: AppColors.text),
-          ),
-        ],
+
       ),
       body: StreamBuilder<DocumentSnapshot<Map<String, dynamic>>>(
         stream: FirebaseFirestore.instance
@@ -501,51 +495,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onPressed: handleLogout,
                       icon: const Icon(Icons.logout),
                       label: const Text('LOGOUT'),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                      ),
-                      onPressed: () async {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Fetching movies from TMDB...'),
-                          ),
-                        );
-
-                        try {
-                          final movies = await TmdbService()
-                              .fetchAndCacheMovies();
-
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(
-                                  'Success! Cached ${movies.length} movies.',
-                                ),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          }
-                        } catch (e) {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('Error: $e'),
-                                backgroundColor: AppColors.error,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      icon: const Icon(Icons.api, color: Colors.white),
-                      label: const Text(
-                        'TEST TMDB API',
-                        style: TextStyle(color: Colors.white),
-                      ),
                     ),
 
                     const SizedBox(height: 16),
