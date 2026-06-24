@@ -9,7 +9,7 @@
 | Name | Matric No | Assigned Tasks |
 |---|---|---|
 | Abdul Hakim Bin Abd. Razak | 2313945 | Swipe engine, match logic |
-| Faris Bin Suhaimi | 2317561 | Friends system, shared matches, FCM notifications |
+| Faris Bin Suhaimi | 2317561 | Friends feature system |
 | Abu Marwan Bin Abu Zakie | 2221579 | TMDB API integration, movie model, data caching |
 | Muhammad Alif Zakwan Bin Mohd Shukri | 2312225 | Firebase auth, onboarding, user profiles |
 
