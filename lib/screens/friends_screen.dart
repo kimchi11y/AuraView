@@ -98,7 +98,7 @@ class _FriendsScreenState extends State<FriendsScreen> {
                     Row(
                       children: [
                         const Text(
-                          'Pending Requests',
+                          'Awaiting Requests',
                           style: TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w800,

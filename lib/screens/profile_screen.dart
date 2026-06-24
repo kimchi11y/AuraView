@@ -231,7 +231,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     SnackBar(
                                       content: Text(e.toString()),
-                                      backgroundColor: AppColors.error,
+                                      backgroundColor: const Color.fromARGB(255, 24, 21, 21),
                                     ),
                                   );
                                 } finally {
@@ -446,7 +446,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               );
                             },
                             icon: const Icon(Icons.edit),
-                            label: const Text('EDIT PROFILE'),
+                            label: const Text('UPDATE PROFILE'),
                           ),
                         ],
                       ),

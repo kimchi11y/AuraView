@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  static const Color primary = Color(0xFFE50914);
+  static const Color primary = Color.fromARGB(255, 34, 30, 31);
   static const Color primaryDark = Color(0xFFB8000B);
-
   static const Color background = Color(0xFFF5F5F5);
   static const Color surface = Color(0xFFFFFFFF);
   static const Color text = Color(0xFF111111);
@@ -68,7 +67,7 @@ class AppTheme {
 
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppColors.primary,
+        backgroundColor: const Color.fromARGB(255, 32, 30, 30),
         foregroundColor: Colors.white,
         elevation: 4,
         shadowColor: Colors.black.withOpacity(0.15),

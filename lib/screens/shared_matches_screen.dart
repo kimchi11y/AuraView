@@ -285,13 +285,13 @@ class _MovieCard extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
+                    color: AppColors.text,
                     borderRadius: BorderRadius.circular(999),
                   ),
                   child: const Text(
                     'MATCHED',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: Colors.black,
                       fontSize: 10,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 0.6,
