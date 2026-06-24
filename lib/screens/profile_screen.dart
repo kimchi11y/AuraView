@@ -26,7 +26,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker picker = ImagePicker();
 
   bool isUploading = false;
-  int _currentIndex = 3;
+  int _currentIndex = 0;
 
   Future<void> pickAndUploadAvatar(String uid) async {
     final XFile? pickedImage = await picker.pickImage(
